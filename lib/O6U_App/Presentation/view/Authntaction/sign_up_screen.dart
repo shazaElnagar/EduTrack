@@ -130,7 +130,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     const Text("Already have an account?"),
                     TextButton(
                       onPressed: () {
-                        // Navigate to login
+
+
+                          Navigator.pushNamed(context, '/login');
+
                       },
                       child: Text("Log in", style: TextStyle(color: orangeColor)),
                     )
