@@ -107,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            // تم التحقق من صحة البيانات
+
                             Navigator.pushNamed(context, '/home');
                           }
                         },

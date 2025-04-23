@@ -140,17 +140,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 SizedBox(
                   width: double.infinity,
                   height: 50,
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.blue),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+
+                        Navigator.pushNamed(context, '/login');
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFFFFFF),
+                      side: const BorderSide(color: Color(0xFFE2651D)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    onPressed: _signUp,
                     child: const Text(
                       "Sign Up",
-                      style: TextStyle(color: Colors.blue, fontSize: 16),
+                      style: TextStyle(fontSize: 18,color:Color(0xFFE2651D) ),
                     ),
                   ),
                 ),
