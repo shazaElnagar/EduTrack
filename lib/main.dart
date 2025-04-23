@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'O6U_App/Presentation/view/Authntaction/welcome_screen.dart';
 import 'O6U_App/Presentation/view/Splash/splash.dart';
 import 'O6U_App/Presentation/view/Authntaction/login_screen.dart';
+import 'O6U_App/Presentation/view/Authntaction/sign_up_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         '/welcome': (context) => const WelcomeScreen(),
         '/login' : (context) => const LoginScreen(),
+        '/signup' :(context) => const SignUpScreen(),
       },
     );
   }

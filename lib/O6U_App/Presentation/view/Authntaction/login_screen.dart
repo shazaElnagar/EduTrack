@@ -15,7 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor:Color(0xFFE6E1DF),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Text(
                   "Log in",
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -119,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: const Text(
                           "Login",
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 18,color:Color(0xFFFFFFFF) ),
                         ),
                       ),
                     )
