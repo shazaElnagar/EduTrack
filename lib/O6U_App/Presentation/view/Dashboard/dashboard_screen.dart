@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 
-
 // Dashboard Screen
 class DashboardScreen extends StatefulWidget {
   @override
@@ -36,7 +35,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       actions: [
         IconButton(
           icon: Icon(Icons.notifications_none, color: Colors.black),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, '/notifications');
+          },
         ),
         CircleAvatar(
           backgroundColor: Colors.orange,
@@ -56,13 +57,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
             decoration: BoxDecoration(color: Color(0xFF005B7F)),
             child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
           ),
-          buildDrawerItem('Notifications', Icons.notifications, () {}),
-          buildDrawerItem('Attendance', Icons.check_circle, () {}),
-          buildDrawerItem('Scan QR code', Icons.qr_code, () {
-            Navigator.pushNamed(context, '/QrView');
+          buildDrawerItem('Attendance', Icons.check_circle, () {
+            Navigator.pushNamed(context, '/Attendance');
           }),
-          buildDrawerItem('Schedule', Icons.schedule, () {}),
-          buildDrawerItem('Quiz Score', Icons.score, () {}),
+          buildDrawerItem('Schedule', Icons.schedule, () {
+            Navigator.pushNamed(context, '/Schedule');
+
+          }),
+          buildDrawerItem('Quiz Score', Icons.score, () {
+            Navigator.pushNamed(context, '/Quiz Score');
+          }),
         ],
       ),
     );

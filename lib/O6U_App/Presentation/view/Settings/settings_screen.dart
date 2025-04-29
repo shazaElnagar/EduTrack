@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-
 // Settings Screen
 class SettingsScreen extends StatelessWidget {
   void _showSnackBar(BuildContext context, String message) {

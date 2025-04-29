@@ -3,9 +3,6 @@ import 'dart:math';
 
 
 
-// Main App Widget
-
-
 // Chats List Screen with Search
 class ChatsScreen extends StatefulWidget {
   @override
@@ -219,7 +216,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.name),
+        backgroundColor: Color(0xFF005B7F),
+        title: Text(widget.name,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
       ),
       body: Column(
         children: [

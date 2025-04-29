@@ -1,8 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-
-
 /// Monitoring Main Screen
 class MonitoringScreen extends StatefulWidget {
   const MonitoringScreen({Key? key}) : super(key: key);

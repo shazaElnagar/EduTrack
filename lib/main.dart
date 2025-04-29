@@ -8,6 +8,10 @@ import 'O6U_App/Presentation/view/Chats/chat_screen.dart';
 import 'O6U_App/Presentation/view/Monitoring/Monitoring_screen.dart';
 import 'O6U_App/Presentation/view/Settings/settings_screen.dart';
 import 'O6U_App/Presentation/view/ScanQr/scan_screen.dart';
+import 'O6U_App/Presentation/view/Schedule/schedle_screen.dart';
+import 'O6U_App/Presentation/view/Notifications/notificatins_screen.dart';
+import 'O6U_App/Presentation/view/Attendance/attendance_screen.dart';
+import 'O6U_App/Presentation/view/QuizScore/quiz_score_screen.dart';
 
 
 void main() {
@@ -27,15 +31,19 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const SplashScreen(),
-        '/welcome': (context) => const WelcomeScreen(),
-        '/login' : (context) => const LoginScreen(),
-        '/signup' :(context) => const SignUpScreen(),
+        '/': (context) =>  SplashScreen(),
+        '/welcome': (context) =>  WelcomeScreen(),
+        '/login' : (context) =>  LoginScreen(),
+        '/signup' :(context) =>  SignUpScreen(),
          '/home'  :(context) => DashboardScreen(),
         '/chats' : (context) => ChatsScreen(),
         '/monitoring' : (context) => MonitoringScreen(),
         '/settings' : (context) => SettingsScreen(),
         '/QrView' : (context) => QRViewExample(),
+        '/Schedule' : (context) => ScheduleScreen(),
+        '/notifications' : (context) => NotificationScreen(),
+        '/Attendance' : (context) => AttendanceScreen(),
+        '/Quiz Score' : (context) => QuizScorePage(),
       },
     );
   }
