@@ -4,20 +4,7 @@ import 'dart:math';
 
 
 // Main App Widget
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Chats App',
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
-        fontFamily: 'Roboto',
-      ),
-      home: ChatsScreen(),
-    );
-  }
-}
+
 
 // Chats List Screen with Search
 class ChatsScreen extends StatefulWidget {
@@ -82,13 +69,13 @@ class _ChatsScreenState extends State<ChatsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFF005B7F),
         elevation: 0,
 
         centerTitle: true,
         title: Text(
           'Chats',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(

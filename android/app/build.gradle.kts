@@ -11,12 +11,13 @@ android {
     ndkVersion = "27.0.12077973"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11  // استخدام Java 11
+        targetCompatibility = JavaVersion.VERSION_11 // استخدام Java 11
+        isCoreLibraryDesugaringEnabled = true  // تمكين Core Library Desugaring
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = "11"  // تحديد هدف JVM كـ 11
     }
 
     defaultConfig {
@@ -39,6 +40,10 @@ android {
     }
 }
 
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")  
+}
+
 flutter {
-    source = "../.."
+    source = "../.."  
 }

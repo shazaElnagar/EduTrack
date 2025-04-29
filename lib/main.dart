@@ -4,6 +4,10 @@ import 'O6U_App/Presentation/view/Splash/splash.dart';
 import 'O6U_App/Presentation/view/Authntaction/login_screen.dart';
 import 'O6U_App/Presentation/view/Authntaction/sign_up_screen.dart';
 import 'O6U_App/Presentation/view/Dashboard/dashboard_screen.dart';
+import 'O6U_App/Presentation/view/Chats/chat_screen.dart';
+import 'O6U_App/Presentation/view/Monitoring/Monitoring_screen.dart';
+import 'O6U_App/Presentation/view/Settings/settings_screen.dart';
+import 'O6U_App/Presentation/view/ScanQr/scan_screen.dart';
 
 
 void main() {
@@ -28,7 +32,10 @@ class MyApp extends StatelessWidget {
         '/login' : (context) => const LoginScreen(),
         '/signup' :(context) => const SignUpScreen(),
          '/home'  :(context) => DashboardScreen(),
-
+        '/chats' : (context) => ChatsScreen(),
+        '/monitoring' : (context) => MonitoringScreen(),
+        '/settings' : (context) => SettingsScreen(),
+        '/QrView' : (context) => QRViewExample(),
       },
     );
   }

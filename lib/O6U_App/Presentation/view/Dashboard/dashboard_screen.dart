@@ -1,30 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'dart:io';
 
-import '../Chats/chat_screen.dart';
-import '../Monitoring/Monitoring_screen.dart';
-import '../Settings/settings_screen.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-// Main App
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Dashboard App',
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
-        fontFamily: 'Roboto',
-      ),
-      home: DashboardScreen(),
-    );
-  }
-}
 
 // Dashboard Screen
 class DashboardScreen extends StatefulWidget {
@@ -49,7 +25,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   AppBar buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFF005B7F),
       elevation: 0,
       leading: IconButton(
         icon: Icon(Icons.menu, color: Colors.black),
@@ -77,16 +53,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(color: Colors.orange),
+            decoration: BoxDecoration(color: Color(0xFF005B7F)),
             child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
           ),
           buildDrawerItem('Notifications', Icons.notifications, () {}),
           buildDrawerItem('Attendance', Icons.check_circle, () {}),
           buildDrawerItem('Scan QR code', Icons.qr_code, () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => QRViewExample()),
-            );
+            Navigator.pushNamed(context, '/QrView');
           }),
           buildDrawerItem('Schedule', Icons.schedule, () {}),
           buildDrawerItem('Quiz Score', Icons.score, () {}),
@@ -124,7 +97,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Levels', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        Text('Levels', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         SizedBox(height: 8),
         Row(
           children: List.generate(4, (index) {
@@ -155,9 +128,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: 4),
-          padding: EdgeInsets.symmetric(vertical: 12),
+          padding: EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.blue : Colors.grey.shade300,
+            color: isSelected ? Color(0xFF005B7F) : Colors.grey.shade300,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
@@ -177,16 +150,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Subjects', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        Text('Subjects', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         SizedBox(height: 8),
         SizedBox(
           height: 100,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              buildSubjectCard('Math-101', 'assets/math.jpg'),
-              buildSubjectCard('PHY-102', 'assets/physics.jpg'),
-              buildSubjectCard('CHEM-103', 'assets/chemistry.jpg'),
+              buildSubjectCard('Math-101', 'assets/images/math1.png'),
+              buildSubjectCard('CS-102', 'assets/images/computer.png'),
+              buildSubjectCard('PHY-103', 'assets/images/physics.png'),
             ],
           ),
         ),
@@ -237,7 +210,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 4),
-            Text(value, style: TextStyle(color: Colors.blue)),
+            Text(value, style: TextStyle(color: Color(0xFF005B7F))),
           ],
         ),
       ),
@@ -247,22 +220,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget buildScanQRButton() {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => QRViewExample()),
-        );
+        Navigator.pushNamed(context, '/QrView');
       },
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.blue, style: BorderStyle.solid),
+          border: Border.all(color: Color(0xFF005B7F), style: BorderStyle.solid),
           borderRadius: BorderRadius.circular(12),
         ),
         padding: EdgeInsets.symmetric(vertical: 24),
         child: Column(
           children: [
-            Icon(Icons.qr_code_scanner, size: 48, color: Colors.blue),
+            Icon(Icons.qr_code_scanner, size: 48, color: Color(0xFF005B7F)),
             SizedBox(height: 8),
-            Text('Scan QR Now', style: TextStyle(color: Colors.blue, fontSize: 18)),
+            Text('Scan QR Now', style: TextStyle(color: Color(0xFF005B7F), fontSize: 18,fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -276,29 +246,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       unselectedItemColor: Colors.grey,
       showUnselectedLabels: true,
       onTap: (index) {
-        if (index == 1) { // Settings is at index 3
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MonitoringScreen ()),
-          );
+        if (index == 1) {
+          Navigator.pushNamed(context, '/monitoring');
+        } else if (index == 2) {
+          Navigator.pushNamed(context, '/chats');
+        } else if (index == 3) {
+          Navigator.pushNamed(context, '/settings');
         }
-
-       else if (index == 2) { // Settings is at index 3
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ChatsScreen ()),
-          );
-        }
-        else if (index == 3) { // Settings is at index 3
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SettingsScreen()),
-          );
-        }
-
-        },
-        // You can also handle other tabs if you want here
-
+      },
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
         BottomNavigationBarItem(icon: Icon(Icons.monitor), label: 'Monitoring'),
@@ -309,66 +264,3 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 }
 
-// QR Scan Screen
-class QRViewExample extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _QRViewExampleState();
-}
-
-class _QRViewExampleState extends State<QRViewExample> {
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  QRViewController? controller;
-  String? qrText;
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    if (Platform.isAndroid) {
-      controller!.pauseCamera();
-    }
-    controller!.resumeCamera();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Scan QR Code'),
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 4,
-            child: QRView(
-              key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Center(
-              child: (qrText != null)
-                  ? Text('Result: $qrText')
-                  : Text('Scan a code'),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  void _onQRViewCreated(QRViewController controller) {
-    this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        qrText = scanData.code;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
-  }
-}

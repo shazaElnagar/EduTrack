@@ -1,27 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MonitoringApp());
-}
 
-/// Main App Widget
-class MonitoringApp extends StatelessWidget {
-  const MonitoringApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Monitoring App',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'Roboto',
-      ),
-      home: const MonitoringScreen(),
-    );
-  }
-}
 
 /// Monitoring Main Screen
 class MonitoringScreen extends StatefulWidget {
@@ -59,9 +39,10 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
 
         title: const Text(
           'Monitoring',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
+        centerTitle: true,
+        backgroundColor: Color(0xFF005B7F),
         elevation: 0,
         actions: [
           IconButton(
