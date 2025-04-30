@@ -104,11 +104,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Text('Levels', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         SizedBox(height: 8),
         Row(
-          children: List.generate(4, (index) {
-            int batch = index + 1;
-            return buildBatchButton(batch);
-          }),
-        ),
+          children: [
+            buildBatchButton(1),
+            buildBatchButton(2),
+            buildBatchButton(3),
+            buildBatchButton(4),
+          ],
+        )
       ],
     );
   }
@@ -116,14 +118,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget buildBatchButton(int batch) {
     bool isSelected = selectedBatch == batch;
     String label = batch == 1
-        ? 'First'
+        ? 'First batch'
         : batch == 2
-        ? 'Second'
+        ? 'Second batch'
         : batch == 3
-        ? 'Third'
-        : 'Fourth';
+        ? 'Third batch'
+        : 'Fourth batch';
 
-    return Expanded(
+    return Flexible( 
+      flex: 1,
       child: GestureDetector(
         onTap: () {
           setState(() {
@@ -132,16 +135,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: 4),
-          padding: EdgeInsets.symmetric(vertical: 10),
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
           decoration: BoxDecoration(
             color: isSelected ? Color(0xFF005B7F) : Colors.grey.shade300,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Center(
-            child: Text(
-              '$label batch',
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black,
+            child: FittedBox(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black,
+                  fontSize: 16,
+                ),
               ),
             ),
           ),
@@ -149,7 +155,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
-
   Widget buildSubjects() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,9 +239,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         padding: EdgeInsets.symmetric(vertical: 24),
         child: Column(
           children: [
-            Icon(Icons.qr_code_scanner, size: 48, color: Color(0xFF005B7F)),
+            Icon(Icons.qr_code_scanner, size: 50, color: Color(0xFF005B7F)),
             SizedBox(height: 8),
-            Text('Scan QR Now', style: TextStyle(color: Color(0xFF005B7F), fontSize: 18,fontWeight: FontWeight.bold)),
+            Text('Scan QR Now', style: TextStyle(color: Color(0xFF005B7F), fontSize: 20,fontWeight: FontWeight.bold)),
           ],
         ),
       ),
