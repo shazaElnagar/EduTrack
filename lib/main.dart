@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'O6U_App/Presentation/view/Authntaction/welcome_screen.dart';
 import 'O6U_App/Presentation/view/Splash/splash.dart';
 import 'O6U_App/Presentation/view/Authntaction/login_screen.dart';
-import 'O6U_App/Presentation/view/Authntaction/sign_up_screen.dart';
 import 'O6U_App/Presentation/view/Dashboard/dashboard_screen.dart';
 import 'O6U_App/Presentation/view/Chats/chat_screen.dart';
 import 'O6U_App/Presentation/view/Monitoring/Monitoring_screen.dart';
@@ -12,6 +11,7 @@ import 'O6U_App/Presentation/view/Schedule/schedle_screen.dart';
 import 'O6U_App/Presentation/view/Notifications/notificatins_screen.dart';
 import 'O6U_App/Presentation/view/Attendance/attendance_screen.dart';
 import 'O6U_App/Presentation/view/QuizScore/quiz_score_screen.dart';
+import 'O6U_App/Presentation/view/Authntaction/admin_screen.dart';
 
 
 void main() {
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         '/': (context) =>  SplashScreen(),
         '/welcome': (context) =>  WelcomeScreen(),
         '/login' : (context) =>  LoginScreen(),
-        '/signup' :(context) =>  SignUpScreen(),
+        '/admin_login' : (context) => AdminLoginScreen(),
          '/home'  :(context) => DashboardScreen(),
         '/chats' : (context) => ChatsScreen(),
         '/monitoring' : (context) => MonitoringScreen(),

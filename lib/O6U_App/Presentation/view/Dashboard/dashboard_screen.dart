@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../subjects/math101_screen.dart';
+
 
 // Dashboard Screen
 class DashboardScreen extends StatefulWidget {
@@ -178,7 +180,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget buildSubjectCard(String title, String imagePath) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ScanOptionsScreen(),
+          ),
+        );
+        // Subject is now clickable — you can add logic here later
+        print('Clicked on $title');
+      },
       child: Container(
         width: 120,
         margin: EdgeInsets.only(right: 8),

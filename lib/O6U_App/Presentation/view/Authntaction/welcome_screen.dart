@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled4/core/utils/assets.dart';
 
-
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
@@ -35,10 +34,7 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    'Ready to teach,'
-                        ' guide, and '
-                        'grow? Let’s '
-                        'begin!',
+                    'Ready to teach, guide, and grow? Let’s begin!',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 40,
@@ -61,20 +57,19 @@ class WelcomeScreen extends StatelessWidget {
                     },
                     child: const Text('Login'),
                   ),
-                  const SizedBox(height: 16),
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFFE2651D),
-                      side: const BorderSide(color: Color(0xFFE2651D)),
-                      minimumSize: const Size.fromHeight(50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/admin_login');
+                    },
+                    child: const Text(
+                      'Login as Admin',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFFE2651D),
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/signup');
-                    },
-                    child: const Text('Sign Up'),
                   ),
                 ],
               ),
