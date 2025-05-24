@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../subjects/math101_screen.dart';
+import '../subjects/subject_screen.dart';
 
 
 // Dashboard Screen

@@ -12,6 +12,7 @@ import 'O6U_App/Presentation/view/Notifications/notificatins_screen.dart';
 import 'O6U_App/Presentation/view/Attendance/attendance_screen.dart';
 import 'O6U_App/Presentation/view/QuizScore/quiz_score_screen.dart';
 import 'O6U_App/Presentation/view/Authntaction/admin_screen.dart';
+import 'package:untitled4/O6U_App/Presentation/view/Admin_Dashboard/admin_dashboard.dart';
 
 
 void main() {
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         '/notifications' : (context) => NotificationScreen(),
         '/Attendance' : (context) => AttendanceScreen(),
         '/Quiz Score' : (context) => QuizScorePage(),
+        '/admin_dashboard' : (context) => AdminDashboardScreen(),
       },
     );
   }
