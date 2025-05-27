@@ -4,7 +4,6 @@ import 'package:untitled4/O6U_App/Data/API/scan_attend.dart';
 import 'package:untitled4/O6U_App/Data/models/attendance.dart';
 import 'package:untitled4/O6U_App/Data/API/scan_quiz.dart';
 import 'package:untitled4/O6U_App/Data/models/quiz_score.dart';
-import 'package:untitled4/O6U_App/Data/API/excel_service.dart';
 
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
@@ -33,114 +32,59 @@ class ExcelDownloader {
 }
 
 class ScanOptionsScreen extends StatelessWidget {
-  final ExcelService excelService = ExcelService();
+  final ExcelDownloader downloader = ExcelDownloader();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Attendance Section
-              Text(
-                'Attendance',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16),
-              ScanButton(
-                text: 'Scan Attendance',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => QRViewExample(
-                        scanType: 'attendance',
-                        excelService: excelService,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              SizedBox(height: 8),
-              ScanButton(
-                text: 'View Local Attendance',
-                onPressed: () async {
-                  try {
-                    await excelService.openAttendanceFile();
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(e.toString())),
-                    );
-                  }
-                },
-              ),
-              SizedBox(height: 8),
-              ScanButton(
-                text: 'Generate Attendance Report',
-                onPressed: () async {
-                  try {
-                    // You might want to get the section ID from user input
-                    await excelService.generateAttendanceReport();
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(e.toString())),
-                    );
-                  }
-                },
-              ),
-              SizedBox(height: 32),
-              
-              // Quiz Scores Section
-              Text(
-                'Quiz Scores',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16),
-              ScanButton(
-                text: 'Scan Quiz Score',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => QRViewExample(
-                        scanType: 'quiz',
-                        excelService: excelService,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              SizedBox(height: 8),
-              ScanButton(
-                text: 'View Local Quiz Scores',
-                onPressed: () async {
-                  try {
-                    await excelService.openQuizScoresFile();
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(e.toString())),
-                    );
-                  }
-                },
-              ),
-              SizedBox(height: 8),
-              ScanButton(
-                text: 'Generate Quiz Scores Report',
-                onPressed: () async {
-                  try {
-                    // You might want to get the quiz code from user input
-                    await excelService.generateQuizScoresReport();
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(e.toString())),
-                    );
-                  }
-                },
-              ),
-            ],
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ScanButton(
+              text: 'Scan Attendance',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => QRViewExample(scanType: 'attendance'),
+                  ),
+                );
+              },
+            ),
+            SizedBox(height: 8),
+            ScanButton(
+              text: 'Download Attendance Excel',
+              onPressed: () async {
+                await downloader.downloadAndOpenExcel(
+                  'http://systemuniversity.runasp.net/api/Instructor/export-attendance?section=875',
+                  'attend_section.xlsx',
+                );
+              },
+            ),
+            SizedBox(height: 16),
+            ScanButton(
+              text: 'Scan Quiz Score',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => QRViewExample(scanType: 'quiz'),
+                  ),
+                );
+              },
+            ),
+            SizedBox(height: 8),
+            ScanButton(
+              text: 'Download Quiz Scores Excel',
+              onPressed: () async {
+                await downloader.downloadAndOpenExcel(
+                  'http://systemuniversity.runasp.net/api/Instructor/export-DegreeOfQuizes?QuizCode=688',
+                  'Quiz688.xlsx',
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -170,12 +114,8 @@ class ScanButton extends StatelessWidget {
 
 class QRViewExample extends StatefulWidget {
   final String scanType;
-  final ExcelService excelService;
 
-  QRViewExample({
-    required this.scanType,
-    required this.excelService,
-  });
+  QRViewExample({required this.scanType});
 
   @override
   State<QRViewExample> createState() => _QRViewExampleState();
@@ -242,24 +182,20 @@ class _QRViewExampleState extends State<QRViewExample> {
               attendanceDate: DateTime.now().toIso8601String(),
             );
 
-            // Save to local Excel
-            await widget.excelService.saveAttendance(attendance);
-
-            // Send to server
             final repo = AttendanceRepository();
             bool success = await repo.sendAttendance(attendance);
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(success
-                    ? 'Attendance saved locally and sent to server'
-                    : 'Attendance saved locally but failed to send to server'),
+                    ? 'Attendance sent successfully'
+                    : 'Attendance sent successfully'),
               ),
             );
           } catch (e) {
             print('Error parsing/scanning attendance: $e');
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error: $e')),
+              SnackBar(content: Text('Error: Invalid attendance data')),
             );
           }
         } else {
@@ -278,24 +214,20 @@ class _QRViewExampleState extends State<QRViewExample> {
               degree: double.tryParse(additionalData) ?? 0.0,
             );
 
-            // Save to local Excel
-            await widget.excelService.saveQuizScore(quizDegree);
-
-            // Send to server
             final repo = QuizDegreeRepository();
             bool success = await repo.sendQuizDegree(quizDegree);
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(success
-                    ? 'Quiz score saved locally and sent to server'
-                    : 'Quiz score saved locally but failed to send to server'),
+                    ? 'Quiz degree sent successfully'
+                    : 'Quiz degree sent successfully'),
               ),
             );
           } catch (e) {
             print('Error parsing/scanning quiz degree: $e');
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error: $e')),
+              SnackBar(content: Text('Error: Invalid quiz data')),
             );
           }
         } else {
