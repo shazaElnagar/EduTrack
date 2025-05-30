@@ -27,7 +27,7 @@ class QuizDegree {
       'StudentCode': studentCode,
       'StudentName': studentName,
       'QuizCode': quizCode,
-      'Degree': degree,
+      'Degree': degree.toString(),
     };
   }
 }

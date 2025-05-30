@@ -12,28 +12,26 @@ class QuizDegreeRepository {
     ),
   );
 
-  Future<bool> sendQuizDegree(QuizDegree quizDegree) async {
+  Future<String> sendQuizDegree(QuizDegree quizDegree) async {
     try {
       print('Sending data: ${quizDegree.toJson()}');
 
       final response = await _dio.post(
         '/api/Instructor/save-scan-Quiz',
-        queryParameters: {
-          'id': 'fc5b79e8-a87f-4b8d-8393-36cb8a4b0a06',
-        },
+
         data: quizDegree.toJson(),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('Success sending quiz degree');
-        return true;
+        return ('Success sending quiz degree');
       } else {
         print('Failed to send quiz degree: ${response.statusCode}');
-        return false;
+        return ('Failed to send quiz degree');
       }
-    } catch (e) {
+    }on DioException catch (e) {
       print('Error sending quiz degree: $e');
-      return false;
+      return ('Error sending quiz degree,  ${e.response?.data["message"]}');
     }
   }
 }

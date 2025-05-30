@@ -40,12 +40,12 @@ class ScanOptionsScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text( 'Enter Lecture ID'),
+          title: Text( 'Enter Section ID'),
           content: TextField(
             controller: textController,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              hintText:  'Enter lecture ID (e.g. 101)',
+              hintText:  'Enter section ID (e.g. 101)',
             ),
           ),
           actions: [
@@ -64,6 +64,38 @@ class ScanOptionsScreen extends StatelessWidget {
       },
     );
   }
+  Future<String?> quiz(BuildContext context) async {
+    TextEditingController textController = TextEditingController();
+
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text( 'Enter Quiz Code'),
+          content: TextField(
+            controller: textController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: 'Enter quiz code (e.g. 101)',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, null),
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, textController.text.trim());
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
 
   Widget build(BuildContext context) {
@@ -114,10 +146,12 @@ class ScanOptionsScreen extends StatelessWidget {
             ScanButton(
               text: 'Download Quiz Scores Excel',
               onPressed: () async {
-                await downloader.downloadAndOpenExcel(
-                  'http://systemuniversity.runasp.net/api/Instructor/export-DegreeOfQuizes?QuizCode=688',
-                  'Quiz688.xlsx',
-                );
+                final additionalData = await quiz(context);
+                if (additionalData != null)
+                  await downloader.downloadAndOpenExcel(
+                    'http://systemuniversity.runasp.net/api/Instructor/export-DegreeOfQuizes?QuizCode=$additionalData',
+                    'quiz_code$additionalData.xlsx',
+                  );
               },
             ),
           ],
@@ -162,7 +196,7 @@ class _QRViewExampleState extends State<QRViewExample> {
   bool isScanned = false;
   final MobileScannerController cameraController = MobileScannerController();
 
-  Future<String?> _promptForAdditionalData(BuildContext context) async {
+  Future<String?> _quiz(BuildContext context) async {
     TextEditingController textController = TextEditingController();
 
     return showDialog<String>(
@@ -200,7 +234,7 @@ class _QRViewExampleState extends State<QRViewExample> {
 
     final code = capture.barcodes.first.rawValue ?? '';
     print('sucess $code');
-    final additionalData = await _promptForAdditionalData(context);
+    final additionalData = await _quiz(context);
 
     if (additionalData != null) {
       setState(() {
@@ -255,13 +289,12 @@ class _QRViewExampleState extends State<QRViewExample> {
             );
 
             final repo = QuizDegreeRepository();
-            bool success = await repo.sendQuizDegree(quizDegree);
+            String message = await repo.sendQuizDegree(quizDegree);
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(success
-                    ? 'Quiz degree sent successfully'
-                    : 'Quiz degree sent successfully'),
+                content: Text(message
+                   ),
               ),
             );
           } catch (e) {
