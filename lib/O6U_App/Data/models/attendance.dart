@@ -25,7 +25,8 @@
 
   Map<String, dynamic> toJson() {
     return {
-      'studentId': studentCode,
+
+      'studentCode': studentCode,
       'section': section,
       'name': name,
       'lectureId': lectureId,

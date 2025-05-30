@@ -33,8 +33,39 @@ class ExcelDownloader {
 
 class ScanOptionsScreen extends StatelessWidget {
   final ExcelDownloader downloader = ExcelDownloader();
+  Future<String?> _promptForAdditionalData(BuildContext context) async {
+    TextEditingController textController = TextEditingController();
 
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text( 'Enter Lecture ID'),
+          content: TextField(
+            controller: textController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText:  'Enter lecture ID (e.g. 101)',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, null),
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, textController.text.trim());
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
@@ -55,11 +86,16 @@ class ScanOptionsScreen extends StatelessWidget {
             SizedBox(height: 8),
             ScanButton(
               text: 'Download Attendance Excel',
-              onPressed: () async {
-                await downloader.downloadAndOpenExcel(
-                  'http://systemuniversity.runasp.net/api/Instructor/export-attendance?section=875',
-                  'attend_section.xlsx',
+              onPressed: (
+
+                  ) async {
+                final additionalData = await _promptForAdditionalData(context);
+                if (additionalData != null) {
+                  await downloader.downloadAndOpenExcel(
+                  'http://systemuniversity.runasp.net/api/Instructor/export-attendance?section=$additionalData',
+                  'attend_section_$additionalData.xlsx',
                 );
+                }
               },
             ),
             SizedBox(height: 16),
@@ -163,6 +199,7 @@ class _QRViewExampleState extends State<QRViewExample> {
     isScanned = true;
 
     final code = capture.barcodes.first.rawValue ?? '';
+    print('sucess $code');
     final additionalData = await _promptForAdditionalData(context);
 
     if (additionalData != null) {
@@ -183,13 +220,16 @@ class _QRViewExampleState extends State<QRViewExample> {
             );
 
             final repo = AttendanceRepository();
-            bool success = await repo.sendAttendance(attendance);
+           final result = await repo.sendAttendance(attendance);
+           final sucess = result.$1 ;
+           final message = result.$2 ;
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(success
-                    ? 'Attendance sent successfully'
-                    : 'Attendance sent successfully'),
+                content: Text(message
+
+                ),
+
               ),
             );
           } catch (e) {
@@ -254,7 +294,7 @@ class _QRViewExampleState extends State<QRViewExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Scan QR Code')),
+      appBar: AppBar(title: Text('Scan QR Code ')),
       body: Column(
         children: <Widget>[
           Expanded(

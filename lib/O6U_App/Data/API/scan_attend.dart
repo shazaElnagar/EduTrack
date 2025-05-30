@@ -12,8 +12,8 @@ class AttendanceRepository {
     ),
   );
 
-  Future<bool> sendAttendance(Attendance attendance) async {
-    print('Sending attendance: ${attendance.toString()}');
+  Future<(bool , String)> sendAttendance(Attendance attendance) async {
+    print('Sending attendance: ${attendance.toJson()}');
     try {
       final response = await _dio.post(
         '/api/Instructor/save-scan-attend',
@@ -23,14 +23,14 @@ class AttendanceRepository {
       print(response.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         print("Attendance sent successfully");
-        return true;
+        return (true , ("Attendance sent successfully")) ;
       } else {
         print("Failed to send attendance: ${response.statusCode}");
-        return false;
+        return (false ,"Failed to send attendance");
       }
-    } catch (e) {
+    }on DioException catch (e) {
       print('Error sending attendance: $e');
-      return false;
+      return (false ,'Error sending attendance , ${e.response?.data["message"]}');
     }
   }
 
