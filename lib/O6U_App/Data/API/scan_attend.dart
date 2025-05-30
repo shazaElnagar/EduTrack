@@ -13,66 +13,127 @@ class AttendanceRepository {
   );
 
   Future<bool> sendAttendance(Attendance attendance) async {
-    print('Sending attendance: ${attendance.toString()}');
+    print('=== SENDING ATTENDANCE ===');
+    print('Attendance object: ${attendance.toString()}');
+    print('JSON data: ${attendance.toJson()}');
+    
     try {
       final response = await _dio.post(
         '/api/Instructor/save-scan-attend',
         data: attendance.toJson(),
       );
 
+      print('=== API RESPONSE ===');
       print('Response status: ${response.statusCode}');
       print('Response data: ${response.data}');
+      print('Response headers: ${response.headers}');
       
+      // Check if it's a successful status code first
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Check if response contains success indicator
+        print('✅ Status code indicates success');
+        
+        // If response data exists, check for specific success/failure indicators
         if (response.data != null) {
-          // If response is a string and contains success indicators
-          if (response.data is String) {
-            String responseString = response.data.toString().toLowerCase();
-            if (responseString.contains('success') || responseString.contains('saved') || responseString.contains('recorded')) {
-              print("Attendance sent successfully");
-              return true;
-            } else if (responseString.contains('error') || responseString.contains('failed') || responseString.contains('duplicate')) {
-              print("Attendance failed: ${response.data}");
-              return false;
-            }
+          String responseStr = response.data.toString().toLowerCase();
+          print('Response string (lowercase): $responseStr');
+          
+          // Check for failure indicators first
+          if (responseStr.contains('error') || 
+              responseStr.contains('failed') || 
+              responseStr.contains('duplicate') ||
+              responseStr.contains('already exists') ||
+              responseStr.contains('invalid')) {
+            print('❌ Response contains failure indicator');
+            return false;
           }
+          
+          // Check for success indicators
+          if (responseStr.contains('success') || 
+              responseStr.contains('saved') || 
+              responseStr.contains('recorded') ||
+              responseStr.contains('created') ||
+              responseStr.contains('added')) {
+            print('✅ Response contains success indicator');
+            return true;
+          }
+          
           // If response is a map/object, check for success field
-          else if (response.data is Map<String, dynamic>) {
+          if (response.data is Map<String, dynamic>) {
             Map<String, dynamic> data = response.data;
+            print('Response is a map with keys: ${data.keys}');
+            
             if (data.containsKey('success')) {
               bool success = data['success'] == true;
-              print(success ? "Attendance sent successfully" : "Attendance failed: ${data['message'] ?? 'Unknown error'}");
+              print('Success field found: $success');
+              if (!success && data.containsKey('message')) {
+                print('Error message: ${data['message']}');
+              }
               return success;
+            }
+            
+            // Check for common response patterns
+            if (data.containsKey('status')) {
+              String status = data['status'].toString().toLowerCase();
+              print('Status field: $status');
+              return status == 'success' || status == 'ok';
+            }
+            
+            if (data.containsKey('result')) {
+              bool result = data['result'] == true;
+              print('Result field: $result');
+              return result;
             }
           }
         }
         
-        // If we reach here and status is 200/201, consider it successful
-        print("Attendance sent successfully (status code: ${response.statusCode})");
+        // If we reach here and status is 200/201 without explicit failure indicators,
+        // assume it's successful
+        print('✅ Assuming success based on status code');
         return true;
+        
       } else if (response.statusCode == 400) {
-        print("Bad request - Invalid attendance data: ${response.data}");
+        print('❌ Bad request - Invalid attendance data');
+        print('Response: ${response.data}');
         return false;
       } else if (response.statusCode == 409) {
-        print("Conflict - Attendance already exists: ${response.data}");
+        print('❌ Conflict - Attendance already exists');
+        print('Response: ${response.data}');
         return false;
       } else if (response.statusCode == 401) {
-        print("Unauthorized - Authentication failed");
+        print('❌ Unauthorized - Authentication failed');
+        return false;
+      } else if (response.statusCode == 422) {
+        print('❌ Unprocessable Entity - Validation failed');
+        print('Response: ${response.data}');
         return false;
       } else {
-        print("Failed to send attendance: ${response.statusCode} - ${response.data}");
+        print('❌ Unexpected status code: ${response.statusCode}');
+        print('Response: ${response.data}');
         return false;
       }
     } on DioException catch (e) {
-      print('Dio error sending attendance: ${e.type} - ${e.message}');
+      print('=== DIO EXCEPTION ===');
+      print('Error type: ${e.type}');
+      print('Error message: ${e.message}');
+      
       if (e.response != null) {
-        print('Error response data: ${e.response?.data}');
         print('Error response status: ${e.response?.statusCode}');
+        print('Error response data: ${e.response?.data}');
+        print('Error response headers: ${e.response?.headers}');
       }
+      
+      // Check if it's a network/timeout issue
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.connectionError) {
+        print('❌ Network connectivity issue');
+      }
+      
       return false;
     } catch (e) {
-      print('Unknown error sending attendance: $e');
+      print('=== UNKNOWN ERROR ===');
+      print('Error: $e');
+      print('Error type: ${e.runtimeType}');
       return false;
     }
   }

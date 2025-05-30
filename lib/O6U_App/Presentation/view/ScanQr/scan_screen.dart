@@ -111,22 +111,37 @@ class _QRViewExampleState extends State<QRViewExample> {
 
   void _onDetect(BarcodeCapture capture) async {
     if (isScanned) return;
-    isScanned = true;
+    
+    // Immediately set scanning flag and stop camera detection
+    setState(() {
+      isScanned = true;
+    });
 
     final code = capture.barcodes.first.rawValue ?? '';
+    print('QR Code scanned: $code');
     
     // Validate QR code format first
     List<String> parts = code.split(',');
     if (parts.length < 3) {
-      _showMessage('Error: Invalid QR Code format', isError: true);
-      isScanned = false;
+      print('Invalid QR Code format: expected 3 parts, got ${parts.length}');
+      _showMessage('Error: Invalid QR Code format (expected: studentCode,name,section)', isError: true);
+      _resetScanner();
+      return;
+    }
+
+    // Validate each part
+    if (parts[0].trim().isEmpty || parts[1].trim().isEmpty || parts[2].trim().isEmpty) {
+      print('Invalid QR Code data: one or more parts are empty');
+      _showMessage('Error: QR Code contains empty data', isError: true);
+      _resetScanner();
       return;
     }
 
     final additionalData = await _promptForAdditionalData(context);
 
-    if (additionalData == null || additionalData.isEmpty) {
-      isScanned = false;
+    if (additionalData == null || additionalData.trim().isEmpty) {
+      print('No additional data provided');
+      _resetScanner();
       return;
     }
 
@@ -135,74 +150,153 @@ class _QRViewExampleState extends State<QRViewExample> {
     });
 
     if (widget.scanType == 'attendance') {
-      await _processAttendance(parts, additionalData);
+      await _processAttendance(parts, additionalData.trim());
     } else if (widget.scanType == 'quiz') {
-      await _processQuiz(parts, additionalData);
+      await _processQuiz(parts, additionalData.trim());
     }
 
-    // Reset scanner after processing
-    Future.delayed(Duration(seconds: 3), () {
-      setState(() {
-        isScanned = false;
-        qrText = null;
-      });
+    // Reset scanner after processing with longer delay
+    Future.delayed(Duration(seconds: 5), () {
+      _resetScanner();
     });
+  }
+
+  void _resetScanner() {
+    setState(() {
+      isScanned = false;
+      qrText = null;
+    });
+    print('Scanner reset for next scan');
   }
 
   Future<void> _processAttendance(List<String> parts, String lectureId) async {
     try {
+      print('Processing attendance for: ${parts[1]} with lecture ID: $lectureId');
+      
+      // Validate data before creating attendance object
+      int? studentCode = int.tryParse(parts[0].trim());
+      int? section = int.tryParse(parts[2].trim());
+      int? lectureIdInt = int.tryParse(lectureId);
+      
+      if (studentCode == null || studentCode <= 0) {
+        _showMessage('Error: Invalid student code', isError: true);
+        setState(() {
+          qrText = 'Error: Invalid student code';
+        });
+        return;
+      }
+      
+      if (section == null || section <= 0) {
+        _showMessage('Error: Invalid section number', isError: true);
+        setState(() {
+          qrText = 'Error: Invalid section number';
+        });
+        return;
+      }
+      
+      if (lectureIdInt == null || lectureIdInt <= 0) {
+        _showMessage('Error: Invalid lecture ID', isError: true);
+        setState(() {
+          qrText = 'Error: Invalid lecture ID';
+        });
+        return;
+      }
+
       final attendance = Attendance(
-        studentCode: int.tryParse(parts[0]) ?? 0,
-        name: parts[1],
-        section: int.tryParse(parts[2]) ?? 0,
-        lectureId: int.tryParse(lectureId) ?? 0,
+        studentCode: studentCode,
+        name: parts[1].trim(),
+        section: section,
+        lectureId: lectureIdInt,
         attendanceDate: DateTime.now().toIso8601String(),
       );
 
+      print('Sending attendance: ${attendance.toString()}');
       final repo = AttendanceRepository();
       bool success = await repo.sendAttendance(attendance);
 
+      print('Attendance result: $success');
+      
+      String message = success 
+          ? 'Success: Attendance recorded for ${parts[1].trim()}' 
+          : 'Failed: Could not record attendance for ${parts[1].trim()}';
+      
       setState(() {
-        qrText = success ? 'Success: Attendance recorded for ${parts[1]}' : 'Failed: Could not record attendance';
+        qrText = message;
       });
 
-      _showMessage(
-        success ? 'Success: Attendance recorded for ${parts[1]}' : 'Failed: Could not record attendance',
-        isError: !success,
-      );
+      _showMessage(message, isError: !success);
+      
     } catch (e) {
+      print('Error processing attendance: $e');
       setState(() {
         qrText = 'Error: Failed to process attendance';
       });
-      _showMessage('Error: Failed to process attendance', isError: true);
+      _showMessage('Error: Failed to process attendance - $e', isError: true);
     }
   }
 
   Future<void> _processQuiz(List<String> parts, String grade) async {
     try {
+      print('Processing quiz for: ${parts[1]} with grade: $grade');
+      
+      // Validate data before creating quiz object
+      int? studentCode = int.tryParse(parts[0].trim());
+      int? quizCode = int.tryParse(parts[2].trim());
+      double? gradeDouble = double.tryParse(grade);
+      
+      if (studentCode == null || studentCode <= 0) {
+        _showMessage('Error: Invalid student code', isError: true);
+        setState(() {
+          qrText = 'Error: Invalid student code';
+        });
+        return;
+      }
+      
+      if (quizCode == null || quizCode <= 0) {
+        _showMessage('Error: Invalid quiz code', isError: true);
+        setState(() {
+          qrText = 'Error: Invalid quiz code';
+        });
+        return;
+      }
+      
+      if (gradeDouble == null || gradeDouble < 0) {
+        _showMessage('Error: Invalid grade value', isError: true);
+        setState(() {
+          qrText = 'Error: Invalid grade value';
+        });
+        return;
+      }
+
       final quizDegree = QuizDegree(
-        studentCode: int.tryParse(parts[0]) ?? 0,
-        studentName: parts[1],
-        quizCode: int.tryParse(parts[2]) ?? 0,
-        degree: double.tryParse(grade) ?? 0.0,
+        studentCode: studentCode,
+        studentName: parts[1].trim(),
+        quizCode: quizCode,
+        degree: gradeDouble,
       );
 
+      print('Sending quiz degree: ${quizDegree.toString()}');
       final repo = QuizDegreeRepository();
       bool success = await repo.sendQuizDegree(quizDegree);
 
+      print('Quiz result: $success');
+      
+      String message = success 
+          ? 'Success: Quiz score recorded for ${parts[1].trim()}' 
+          : 'Failed: Could not record quiz score for ${parts[1].trim()}';
+      
       setState(() {
-        qrText = success ? 'Success: Quiz score recorded for ${parts[1]}' : 'Failed: Could not record quiz score';
+        qrText = message;
       });
 
-      _showMessage(
-        success ? 'Success: Quiz score recorded for ${parts[1]}' : 'Failed: Could not record quiz score',
-        isError: !success,
-      );
+      _showMessage(message, isError: !success);
+      
     } catch (e) {
+      print('Error processing quiz: $e');
       setState(() {
         qrText = 'Error: Failed to process quiz score';
       });
-      _showMessage('Error: Failed to process quiz score', isError: true);
+      _showMessage('Error: Failed to process quiz score - $e', isError: true);
     }
   }
 
@@ -235,6 +329,12 @@ class _QRViewExampleState extends State<QRViewExample> {
       appBar: AppBar(
         backgroundColor: Color(0xFF005B7F),
         title: Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.info_outline, color: Colors.white),
+            onPressed: _showDebugInfo,
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -282,6 +382,44 @@ class _QRViewExampleState extends State<QRViewExample> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showDebugInfo() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Debug Information'),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Scan Type: ${widget.scanType ?? "Not specified"}'),
+                SizedBox(height: 8),
+                Text('Scanner State: ${isScanned ? "Locked" : "Ready"}'),
+                SizedBox(height: 8),
+                Text('Expected QR Format: studentCode,studentName,section'),
+                SizedBox(height: 8),
+                Text('Example: 12345,John Doe,101'),
+                SizedBox(height: 16),
+                Text('Troubleshooting:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('• Make sure QR code has 3 parts separated by commas'),
+                Text('• Student code and section must be numbers'),
+                Text('• Lecture ID/Grade must be valid numbers'),
+                Text('• Check console output for detailed errors'),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
