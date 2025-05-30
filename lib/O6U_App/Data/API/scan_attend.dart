@@ -20,16 +20,59 @@ class AttendanceRepository {
         data: attendance.toJson(),
       );
 
-      print(response.toString());
+      print('Response status: ${response.statusCode}');
+      print('Response data: ${response.data}');
+      
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print("Attendance sent successfully");
+        // Check if response contains success indicator
+        if (response.data != null) {
+          // If response is a string and contains success indicators
+          if (response.data is String) {
+            String responseString = response.data.toString().toLowerCase();
+            if (responseString.contains('success') || responseString.contains('saved') || responseString.contains('recorded')) {
+              print("Attendance sent successfully");
+              return true;
+            } else if (responseString.contains('error') || responseString.contains('failed') || responseString.contains('duplicate')) {
+              print("Attendance failed: ${response.data}");
+              return false;
+            }
+          }
+          // If response is a map/object, check for success field
+          else if (response.data is Map<String, dynamic>) {
+            Map<String, dynamic> data = response.data;
+            if (data.containsKey('success')) {
+              bool success = data['success'] == true;
+              print(success ? "Attendance sent successfully" : "Attendance failed: ${data['message'] ?? 'Unknown error'}");
+              return success;
+            }
+          }
+        }
+        
+        // If we reach here and status is 200/201, consider it successful
+        print("Attendance sent successfully (status code: ${response.statusCode})");
         return true;
+      } else if (response.statusCode == 400) {
+        print("Bad request - Invalid attendance data: ${response.data}");
+        return false;
+      } else if (response.statusCode == 409) {
+        print("Conflict - Attendance already exists: ${response.data}");
+        return false;
+      } else if (response.statusCode == 401) {
+        print("Unauthorized - Authentication failed");
+        return false;
       } else {
-        print("Failed to send attendance: ${response.statusCode}");
+        print("Failed to send attendance: ${response.statusCode} - ${response.data}");
         return false;
       }
+    } on DioException catch (e) {
+      print('Dio error sending attendance: ${e.type} - ${e.message}');
+      if (e.response != null) {
+        print('Error response data: ${e.response?.data}');
+        print('Error response status: ${e.response?.statusCode}');
+      }
+      return false;
     } catch (e) {
-      print('Error sending attendance: $e');
+      print('Unknown error sending attendance: $e');
       return false;
     }
   }
